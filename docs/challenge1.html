@@ -9,10 +9,10 @@
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
-<meta name="author" content="Joschka Schwarz" />
+<meta name="author" content="fblome" />
 
 
-<title>ggplot Graphs</title>
+<title>challenge1_tidyverse</title>
 
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -341,50 +341,208 @@ $(document).ready(function () {
 
 
 
-<h1 class="title toc-ignore">ggplot Graphs</h1>
-<h4 class="author">Joschka Schwarz</h4>
-<h4 class="date">Nov 5, 2020</h4>
+<h1 class="title toc-ignore">challenge1_tidyverse</h1>
+<h4 class="author">fblome</h4>
+<h4 class="date">27 11 2020</h4>
 
 </div>
 
 
-<p>The following code chunks will only print something, if you’ve installed the package <code>ggplot2</code>.</p>
-<p>Install it by running:</p>
-<pre class="r"><code>install.packages(&quot;ggplot2&quot;)</code></pre>
-<p>After installing it, you can remove the <code>if</code> conditions in the next code chunks.</p>
-<pre class="r"><code>if (&quot;ggplot2&quot; %in% rownames(installed.packages())) {
-  
-  # Laod plotting library
-  library(ggplot2)
+<div id="intro-to-tidyverse---challenge" class="section level1">
+<h1>Intro to tidyverse - Challenge</h1>
+<p>Last compiled: 2020-11-27</p>
+<p>First do some Loading and joining Data</p>
+<pre class="r"><code># SALES ANALYSIS ----
 
-  # Print data
-  mpg
+# 1.0 Load libraries ----
+
+library(tidyverse)
+library(readxl)
+
+# 2.0 Importing Files ----
+
+bikes_tbl &lt;- read_excel(path = &quot;./bike_sales/01_raw_data/bikes.xlsx&quot;)
+orderlines_tbl &lt;- read_excel(path = &quot;./bike_sales/01_raw_data/orderlines.xlsx&quot;)</code></pre>
+<pre><code>## New names:
+## * `` -&gt; ...1</code></pre>
+<pre class="r"><code>bikeshops_tbl &lt;- read_excel(path = &quot;./bike_sales/01_raw_data/bikeshops.xlsx&quot;)
+
+# 3.0 Examining Data ----
+
+# 4.0 Joining Data ----
+
+bike_orderlines_joined_tbl &lt;- orderlines_tbl %&gt;% left_join(bikes_tbl, by = c(&quot;product.id&quot; = &quot;bike.id&quot;)) %&gt;%
+  left_join(bikeshops_tbl, by = c(&quot;customer.id&quot; = &quot;bikeshop.id&quot;))</code></pre>
+<div id="wrangling-of-data" class="section level2">
+<h2>Wrangling of Data</h2>
+<p>Next we do some wrangling of the Data</p>
+<pre class="r"><code># 5.0 Wrangling Data ----
+# All actions are chained with the pipe already. You can perform each step separately
+# and use glimpse() or View() to validate your code. Store the result in a variable at the end of the steps.
+
+bike_orderlines_wrangled_tbl &lt;- bike_orderlines_joined_tbl %&gt;%
   
-  }</code></pre>
-<pre><code>## # A tibble: 234 x 11
-##    manufacturer model      displ  year   cyl trans      drv     cty   hwy fl    class  
-##    &lt;chr&gt;        &lt;chr&gt;      &lt;dbl&gt; &lt;int&gt; &lt;int&gt; &lt;chr&gt;      &lt;chr&gt; &lt;int&gt; &lt;int&gt; &lt;chr&gt; &lt;chr&gt;  
-##  1 audi         a4           1.8  1999     4 auto(l5)   f        18    29 p     compact
-##  2 audi         a4           1.8  1999     4 manual(m5) f        21    29 p     compact
-##  3 audi         a4           2    2008     4 manual(m6) f        20    31 p     compact
-##  4 audi         a4           2    2008     4 auto(av)   f        21    30 p     compact
-##  5 audi         a4           2.8  1999     6 auto(l5)   f        16    26 p     compact
-##  6 audi         a4           2.8  1999     6 manual(m5) f        18    26 p     compact
-##  7 audi         a4           3.1  2008     6 auto(av)   f        18    27 p     compact
-##  8 audi         a4 quattro   1.8  1999     4 manual(m5) 4        18    26 p     compact
-##  9 audi         a4 quattro   1.8  1999     4 auto(l5)   4        16    25 p     compact
-## 10 audi         a4 quattro   2    2008     4 manual(m6) 4        20    28 p     compact
-## # ... with 224 more rows</code></pre>
-<pre class="r"><code>if (&quot;ggplot2&quot; %in% rownames(installed.packages())) {
+  # 5.1 Separate category name
+  separate(col    = location,
+           into   = c(&quot;city&quot;, &quot;state&quot;),
+           sep    = &quot;, &quot;) %&gt;%
   
-ggplot(data = mpg, mapping = aes(x = displ, y = hwy)) + 
-  geom_point(mapping = aes(color = class)) + 
-  geom_smooth()
+  # 5.2 Add the total price (price * quantity) 
+  # Add a column to a tibble that uses a formula-style calculation of other columns
+  mutate(total.price = price * quantity) %&gt;%
   
-}</code></pre>
-<pre><code>## `geom_smooth()` using method = &#39;loess&#39; and formula &#39;y ~ x&#39;</code></pre>
-<p><img src="ggplot_graphs_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
-<p>…</p>
+  # 5.3 Optional: Reorganize. Using select to grab or remove unnecessary columns
+  # 5.3.1 by exact column name
+  select(-...1, -gender) %&gt;%
+  
+  # 5.3.2 by a pattern
+  # You can use the select_helpers to define patterns. 
+  # Type ?ends_with and click on Select helpers in the documentation
+  select(-ends_with(&quot;.id&quot;)) %&gt;% 
+  
+  # 5.3.3 Actually we need the column &quot;order.id&quot;. Let&#39;s bind it back to the data
+  bind_cols(bike_orderlines_joined_tbl %&gt;% select(order.id)) %&gt;% 
+
+  # 5.3.4 You can reorder the data by selecting the columns in your desired order.
+  # You can use select_helpers like contains() or everything()
+  select(order.id, contains(&quot;order&quot;), contains(&quot;model&quot;), contains(&quot;category&quot;),
+         price, quantity, total.price,
+         everything()) %&gt;% 
+  
+  # 5.4 Rename columns because we actually wanted underscores instead of the dots
+  # (one at the time vs. multiple at once)
+  rename(bikeshop = name) %&gt;%
+  set_names(names(.) %&gt;% str_replace_all(&quot;\\.&quot;, &quot;_&quot;))</code></pre>
+</div>
+<div id="analysis-of-sales-by-location" class="section level2">
+<h2>Analysis of sales by location</h2>
+<p>Get insights and plot Bar Charts</p>
+<ol style="list-style-type: decimal">
+<li>Manipulate Data</li>
+</ol>
+<pre class="r"><code># 6.0 Business Insights ----
+
+# 6.1 Sales by location (state) ----
+  
+  #Step 1 - Manipulate
+  
+  sales_by_state_tbl &lt;- bike_orderlines_wrangled_tbl %&gt;%
+  
+  #Select columns
+  select(state, total_price) %&gt;%
+  
+  #Grouping by state and summarizing sales
+  group_by(state) %&gt;%
+  summarize(sales = sum(total_price)) %&gt;%
+  
+  #Format $ Text
+  mutate(sales_text = scales::dollar(sales, big.mark = &quot;.&quot;, 
+                                     decimal.mark = &quot;,&quot;, 
+                                     prefix = &quot;&quot;, 
+                                     suffix = &quot; €&quot;))</code></pre>
+<pre><code>## `summarise()` ungrouping output (override with `.groups` argument)</code></pre>
+<ol start="2" style="list-style-type: decimal">
+<li>Visualize Data</li>
+</ol>
+<pre class="r"><code>  #Step 2 - Visualize
+  
+  sales_by_state_tbl %&gt;%
+    
+    # Setup canvas with the columns state (x-axis) and sales (y-axis)
+    ggplot(aes(x = state, y = sales)) +
+    
+    # Geometries
+    geom_col(fill = &quot;#2DC6D6&quot;) + # Use geom_col for a bar plot
+    geom_label(aes(label = sales_text)) + # Adding labels to the bars
+    geom_smooth(method = &quot;lm&quot;, se = FALSE) + # Adding a trendline
+    
+    # Formatting
+    # scale_y_continuous(labels = scales::dollar) + # Change the y-axis. 
+    # Again, we have to adjust it for euro values
+    scale_y_continuous(labels = scales::dollar_format(big.mark = &quot;.&quot;, 
+                                                      decimal.mark = &quot;,&quot;, 
+                                                      prefix = &quot;&quot;, 
+                                                      suffix = &quot; €&quot;)) +
+    #Theme
+    theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+    
+    
+    labs(
+      title    = &quot;Revenue by state&quot;,
+      subtitle = &quot;Upward Trend&quot;,
+      x = &quot;&quot;, # Override defaults for x and y
+      y = &quot;Revenue&quot;
+    )</code></pre>
+<pre><code>## `geom_smooth()` using formula &#39;y ~ x&#39;</code></pre>
+<p><img src="challenge1_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+</div>
+<div id="sales-by-location-and-year" class="section level2">
+<h2>Sales by location and year</h2>
+<p>Get insights and plot Bar Charts 1. Manipulate Data</p>
+<pre class="r"><code># 6.2 Sales by Location (state) and year ----
+  
+  library(lubridate)</code></pre>
+<pre><code>## 
+## Attache Paket: &#39;lubridate&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:base&#39;:
+## 
+##     date, intersect, setdiff, union</code></pre>
+<pre class="r"><code>  # Step 1 - Manipulate
+
+  sales_by_year_state_tbl &lt;- bike_orderlines_wrangled_tbl %&gt;%
+    
+    # Select columns and add a year
+    select(order_date, total_price, state) %&gt;%
+    mutate(year = year(order_date)) %&gt;%
+    
+    
+    # Group by and summarize year and state
+    group_by(year, state) %&gt;% 
+    summarize(sales = sum(total_price)) %&gt;%
+    ungroup() %&gt;%
+    
+    #Format $ Text
+    mutate(sales_text = scales::dollar(sales, big.mark = &quot;.&quot;, 
+                                       decimal.mark = &quot;,&quot;, 
+                                       prefix = &quot;&quot;, 
+                                       suffix = &quot; €&quot;))</code></pre>
+<pre><code>## `summarise()` regrouping output by &#39;year&#39; (override with `.groups` argument)</code></pre>
+<ol start="2" style="list-style-type: decimal">
+<li>Visualize Data</li>
+</ol>
+<pre class="r"><code># Step 2 - Visualize
+  
+  sales_by_year_state_tbl %&gt;%
+    
+    #Set up x, y, fill
+    ggplot(aes(x = year, y = sales, fill = state)) +
+    
+    #Geometries
+    geom_col() +  # Use geom_col for a bar plot
+    geom_smooth(method = &quot;lm&quot;, se = FALSE) + # Adding a trendline
+    
+    #Facet
+    facet_wrap(~ state) +
+  
+    #Formatting
+    scale_y_continuous(labels = scales::dollar_format(big.mark = &quot;.&quot;, 
+                                                      decimal.mark = &quot;,&quot;, 
+                                                      prefix = &quot;&quot;, 
+                                                      suffix = &quot; €&quot;)) +
+    #Theme
+    theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+
+    labs(
+      title = &quot;Revenue by year and state&quot;,
+      subtitle = &quot;Nearly each state has an upward trend&quot;,
+      fill = &quot;state&quot;, # Changes the legend name
+      x = &quot;&quot;,
+      y = &quot;Revenue&quot;
+    )</code></pre>
+<pre><code>## `geom_smooth()` using formula &#39;y ~ x&#39;</code></pre>
+<p><img src="challenge1_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+</div>
+</div>
 
 
 

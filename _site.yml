@@ -8,7 +8,13 @@ navbar:
     - text: "Home"
       href: index.html
     - text: "Journal"
-      href: journal.html
+      menu:
+            - text: "Main Journal Page"
+              href: journal.html
+            - text: "Challenge 1 - tidyverse"
+              href: challenge1.html
+            - text: "Challenge 2 - web scraping"
+              href: challenge2.html
     - text: "Class notes"
       menu:
             - text: "Dictionary"
