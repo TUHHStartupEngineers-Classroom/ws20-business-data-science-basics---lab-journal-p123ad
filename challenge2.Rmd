@@ -10,22 +10,72 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## R Markdown
+# Challenge 2 - Web scraping
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+## 1. get Data via an API
+Get Data from first Pokemon Bulbasaur
+````{r}
+#Acces to a Database using HTTP and API ----
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+#Import library
+library(tidyverse)
+library(glue)
+library(httr)
+library(jsonlite)
 
-```{r cars}
-summary(cars)
-```
+# First http request to Pokemon API
+resp <- GET("https://pokeapi.co/api/v2/pokemon/1")
+resp
 
-## Including Plots
 
-You can also embed plots, for example:
+#Convert raw Unicode into a character vector in JSON format
+resp %>% 
+  .$content %>% 
+  rawToChar() %>% 
+  fromJSON()
 
-```{r pressure, echo=FALSE}
-plot(pressure)
-```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+````
+
+## 2. Scrape Data from website
+
+````{r}
+## Create a small database of at least one category
+## database content: model names and price for at least one category
+library(tidyverse)
+library(glue)
+library(rvest)
+library(xopen)
+library(jsonlite)
+library(stringi)
+
+#Set URL to specific website
+url_racingbike <- "https://www.rosebikes.de/fahrr%C3%A4der/rennrad"
+
+# Open the URL in webbrowser
+xopen(url_racingbike)
+
+# Read in the HTML for the Ebike URL
+html_racingbike <- read_html(url_racingbike)
+
+# Web scrape the ids for the ebikes
+name <- html_racingbike %>%
+                  html_nodes(css = ".catalog-category-bikes__title") %>%
+                  html_text() %>%
+                  #stringr::str_extract_all("[A-Z]+(?=\\n)") %>%
+                  tibble()
+name
+
+prices <- html_racingbike %>%
+                  html_nodes(css = ".catalog-category-bikes__price-title") %>%
+                  html_text() %>%
+                  tibble()
+prices
+
+# Merge the two tibbles together
+combo <- bind_cols(name,prices)
+
+combo
+
+````
+
