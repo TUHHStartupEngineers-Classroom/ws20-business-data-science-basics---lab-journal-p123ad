@@ -10,7 +10,7 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-# Intro to tidyverse - Challenge
+# Challenge 1 - Intro to tidyverse
 
 Last compiled: `r Sys.Date()`
 

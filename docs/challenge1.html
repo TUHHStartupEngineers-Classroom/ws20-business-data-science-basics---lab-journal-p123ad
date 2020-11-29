@@ -287,23 +287,8 @@ $(document).ready(function () {
         <li>
   <a href="index.html">Home</a>
 </li>
-<li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-    Journal
-     
-    <span class="caret"></span>
-  </a>
-  <ul class="dropdown-menu" role="menu">
-    <li>
-      <a href="journal.html">Main Journal Page</a>
-    </li>
-    <li>
-      <a href="challenge1.html">Challenge 1 - tidyverse</a>
-    </li>
-    <li>
-      <a href="challenge2.html">Challenge 2 - web scraping</a>
-    </li>
-  </ul>
+<li>
+  <a href="journal.html">Main Journal Page</a>
 </li>
 <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
@@ -348,9 +333,9 @@ $(document).ready(function () {
 </div>
 
 
-<div id="intro-to-tidyverse---challenge" class="section level1">
-<h1>Intro to tidyverse - Challenge</h1>
-<p>Last compiled: 2020-11-27</p>
+<div id="challenge-1---intro-to-tidyverse" class="section level1">
+<h1>Challenge 1 - Intro to tidyverse</h1>
+<p>Last compiled: 2020-11-29</p>
 <p>First do some Loading and joining Data</p>
 <pre class="r"><code># SALES ANALYSIS ----
 
@@ -474,20 +459,16 @@ bike_orderlines_wrangled_tbl &lt;- bike_orderlines_joined_tbl %&gt;%
       y = &quot;Revenue&quot;
     )</code></pre>
 <pre><code>## `geom_smooth()` using formula &#39;y ~ x&#39;</code></pre>
-<p><img src="challenge1_files/figure-html/unnamed-chunk-119-1.png" width="672" /></p>
+<p><img src="challenge1_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
 </div>
 <div id="sales-by-location-and-year" class="section level2">
 <h2>Sales by location and year</h2>
 <p>Get insights and plot Bar Charts 1. Manipulate Data</p>
 <pre class="r"><code># 6.2 Sales by Location (state) and year ----
   
-  library(lubridate)</code></pre>
-<pre><code>## 
-## Attache Paket: &#39;lubridate&#39;</code></pre>
-<pre><code>## The following objects are masked from &#39;package:base&#39;:
-## 
-##     date, intersect, setdiff, union</code></pre>
-<pre class="r"><code>  # Step 1 - Manipulate
+  library(lubridate)
+
+  # Step 1 - Manipulate
 
   sales_by_year_state_tbl &lt;- bike_orderlines_wrangled_tbl %&gt;%
     
@@ -540,7 +521,7 @@ bike_orderlines_wrangled_tbl &lt;- bike_orderlines_joined_tbl %&gt;%
       y = &quot;Revenue&quot;
     )</code></pre>
 <pre><code>## `geom_smooth()` using formula &#39;y ~ x&#39;</code></pre>
-<p><img src="challenge1_files/figure-html/unnamed-chunk-121-1.png" width="672" /></p>
+<p><img src="challenge1_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
 </div>
 </div>
 

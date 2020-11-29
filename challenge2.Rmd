@@ -14,7 +14,8 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## 1. get Data via an API
 Get Data from first Pokemon Bulbasaur
-````{r}
+Set eval=FALSE because Dataset is very very large
+````{r eval=FALSE}
 #Acces to a Database using HTTP and API ----
 
 #Import library
@@ -51,14 +52,19 @@ library(stringi)
 
 #Set URL to specific website
 url_racingbike <- "https://www.rosebikes.de/fahrr%C3%A4der/rennrad"
-
+````
+### Open url
+````{r eval=FALSE}
 # Open the URL in webbrowser
 xopen(url_racingbike)
+````
 
-# Read in the HTML for the Ebike URL
+### Read in the HTML
+````{r}
+# Read in the HTML for the Racingbike URL
 html_racingbike <- read_html(url_racingbike)
 
-# Web scrape the ids for the ebikes
+# Web scrape the ids for the racingbike
 name <- html_racingbike %>%
                   html_nodes(css = ".catalog-category-bikes__title") %>%
                   html_text() %>%
@@ -71,7 +77,10 @@ prices <- html_racingbike %>%
                   html_text() %>%
                   tibble()
 prices
+````
 
+### Merge the two tibbles
+````{r}
 # Merge the two tibbles together
 combo <- bind_cols(name,prices)
 
