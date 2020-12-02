@@ -527,3 +527,160 @@ top_tech_main_classes
 
 
 
+
+# Challenge 4 - Data Visualization
+
+## Libraries
+````{r}
+library(tidyverse)
+library(lubridate)
+````
+
+## Data Import
+````{r}
+covid_data_tbl <- read_csv("https://opendata.ecdc.europa.eu/covid19/casedistribution/csv")
+````
+
+## Data wrangling part 1
+````{r}
+cum_cases_tbl <- covid_data_tbl %>%
+  mutate(date = lubridate::dmy(dateRep)) %>% 
+    
+  # Filter for cases in 2020
+  filter(year == 2020) %>%
+  
+  # Select relevant columns
+  select(cases, countriesAndTerritories, date, month) %>%
+
+
+  filter(countriesAndTerritories == "United_States_of_America" |
+         countriesAndTerritories == "Germany" |
+         countriesAndTerritories == "France" |
+         countriesAndTerritories == "Spain" |
+         countriesAndTerritories =="United_Kingdom") %>%
+  arrange(date) %>%
+  
+  # Group and calculate cumulative cases each for country
+  group_by(countriesAndTerritories) %>%
+  mutate(cum_cases = cumsum(cases))
+  
+  # get list mit cummulative cases per region
+  max_cum_cases_tbl <- cum_cases_tbl %>%
+    group_by(countriesAndTerritories) %>%
+    summarize(max_cases = max(cum_cases))
+````    
+    
+## Data visualization part 1
+
+````{r}
+cases_plot <- cum_cases_tbl %>%
+  ggplot() +
+  
+  geom_line(aes(x = date, y = cum_cases, color = countriesAndTerritories)) +
+    
+  theme_dark() +
+    
+  theme(
+    axis.text.x = element_text(
+      angle = 45,
+      hjust = 1
+    )
+  ) +
+    
+  expand_limits(y = 1.5e7) +
+    
+  scale_y_continuous(labels = scales::dollar_format(scale = 1e-6,
+                                                    prefix = "",
+                                                    suffix = "M")) +
+  
+  labs(
+      title = "COVID-19 confirmed cases worldwide",
+      subtitle = str_glue("Date: {today()}"),
+      x = "Year 2020",
+      y = "Cumulative Cases"
+    ) 
+    
+    
+#  geom_label(aes(x = month(date), y = 500000, label = max_cases),
+#             vjust = -0.5,
+#             #size = 5,
+#             fill = "#1f78b4",
+#             color = "white",
+#             fontface = "italic",
+#             data = max_cum_cases_tbl) 
+   
+  cases_plot 
+  
+````
+
+## Data wrangling part 2
+````{r}
+library(maps)
+  world <- map_data("world")
+  
+  
+  mortality_tbl <- covid_data_tbl %>%
+    
+    # calculate overall deaths
+    group_by(countriesAndTerritories) %>%
+    mutate(cum_deaths = sum(deaths)) %>%
+    # Calculate mortality rate
+    summarise(cum_deaths, mortality_rate = cum_deaths / popData2019 * 100) %>%
+    ungroup() %>%
+    
+    #issue with different naming
+    mutate(across(countriesAndTerritories, str_replace_all, "_", " ")) %>%
+    mutate(countriesAndTerritories = case_when(
+      
+      countriesAndTerritories == "United Kingdom" ~ "UK",
+      countriesAndTerritories == "United States of America" ~ "USA",
+      countriesAndTerritories == "Czechia" ~ "Czech Republic",
+      TRUE ~ countriesAndTerritories
+    )) %>%
+    
+    
+    left_join(world, by = c("countriesAndTerritories" = "region"), copy = FALSE) %>%
+      select(mortality_rate, countriesAndTerritories, long, lat)
+  
+
+
+      sum_deaths <- covid_data_tbl %>%
+      summarize(cum_deaths = sum(deaths))
+      
+      num_deaths = sum_deaths[[1]]
+
+````
+
+## Data Visualization part 2
+
+````{r}
+# Visualization part 2 ----
+
+  world_map_plot <- mortality_tbl %>%
+    
+    ggplot() +
+    
+    geom_map(aes(x = long,
+                 y = lat,
+                 map_id = countriesAndTerritories,
+                 fill = mortality_rate),
+             map = world) +
+    
+    theme_dark() +
+    
+    scale_fill_gradient(low = "red", 
+                        high = "black",
+                        name = "Mortality Rate in Percent") +
+    
+    labs(
+      title = "Confirmed COVID-19 deaths relative to the size of the population",
+      subtitle = str_glue("More than {num_deaths} Deaths confirmed COVID-19 deaths worldwide"),
+      caption = str_glue("Date: {now()}")
+
+    ) 
+
+      world_map_plot    
+
+````
+
+
