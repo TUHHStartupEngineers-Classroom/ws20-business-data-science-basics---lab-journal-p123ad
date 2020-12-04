@@ -388,16 +388,16 @@ name &lt;- html_racingbike %&gt;%
                   tibble()
 name</code></pre>
 <pre><code>## # A tibble: 9 x 1
-##   .                          
-##   &lt;chr&gt;                      
-## 1 &quot;\n\nPRO SL DISC\n\n&quot;      
-## 2 &quot;\n\nPRO SL\n\n&quot;           
-## 3 &quot;\n\nREVEAL FOUR DISC\n\n &quot;
-## 4 &quot;\n\nREVEAL FOUR\n\n&quot;      
-## 5 &quot;\n\nREVEAL SIX DISC\n\n&quot;  
-## 6 &quot;\n\nX-LITE FOUR DISC\n\n&quot; 
-## 7 &quot;\n\nX-LITE FOUR\n\n&quot;      
-## 8 &quot;\n\nX-LITE SIX DISC\n\n&quot;  
+##   .                         
+##   &lt;chr&gt;                     
+## 1 &quot;\n\nPRO SL DISC\n\n&quot;     
+## 2 &quot;\n\nPRO SL\n\n&quot;          
+## 3 &quot;\n\nREVEAL FOUR DISC\n\n&quot;
+## 4 &quot;\n\nREVEAL FOUR\n\n&quot;     
+## 5 &quot;\n \nREVEAL SIX DISC\n\n&quot;
+## 6 &quot;\n\nX-LITE FOUR DISC\n\n&quot;
+## 7 &quot;\n\nX-LITE FOUR\n\n&quot;     
+## 8 &quot;\n\nX-LITE SIX DISC\n\n&quot; 
 ## 9 &quot;\n\nX-LITE SIX\n\n&quot;</code></pre>
 <pre class="r"><code>prices &lt;- html_racingbike %&gt;%
                   html_nodes(css = &quot;.catalog-category-bikes__price-title&quot;) %&gt;%
@@ -420,23 +420,21 @@ prices</code></pre>
 <div id="merge-the-two-tibbles" class="section level3">
 <h3>Merge the two tibbles</h3>
 <pre class="r"><code># Merge the two tibbles together
-combo &lt;- bind_cols(name,prices)</code></pre>
-<pre><code>## New names:
-## * . -&gt; ....1
-## * . -&gt; ....2</code></pre>
-<pre class="r"><code>combo</code></pre>
+combo &lt;- bind_cols(name,prices)
+
+combo</code></pre>
 <pre><code>## # A tibble: 9 x 2
-##   ....1                       ....2              
-##   &lt;chr&gt;                       &lt;chr&gt;              
-## 1 &quot;\n\nPRO SL DISC\n\n&quot;       &quot;\nab 1.599,00 €\n&quot;
-## 2 &quot;\n\nPRO SL\n\n&quot;            &quot;\nab 1.199,00 €\n&quot;
-## 3 &quot;\n\nREVEAL FOUR DISC\n\n &quot; &quot;\nab 2.499,00 €\n&quot;
-## 4 &quot;\n\nREVEAL FOUR\n\n&quot;       &quot;\nab 2.099,00 €\n&quot;
-## 5 &quot;\n\nREVEAL SIX DISC\n\n&quot;   &quot;\nab 3.499,00 €\n&quot;
-## 6 &quot;\n\nX-LITE FOUR DISC\n\n&quot;  &quot;\nab 2.699,00 €\n&quot;
-## 7 &quot;\n\nX-LITE FOUR\n\n&quot;       &quot;\nab 2.199,00 €\n&quot;
-## 8 &quot;\n\nX-LITE SIX DISC\n\n&quot;   &quot;\nab 3.899,00 €\n&quot;
-## 9 &quot;\n\nX-LITE SIX\n\n&quot;        &quot;\nab 3.499,00 €\n&quot;</code></pre>
+##   ....1                      ....2              
+##   &lt;chr&gt;                      &lt;chr&gt;              
+## 1 &quot;\n\nPRO SL DISC\n\n&quot;      &quot;\nab 1.599,00 €\n&quot;
+## 2 &quot;\n\nPRO SL\n\n&quot;           &quot;\nab 1.199,00 €\n&quot;
+## 3 &quot;\n\nREVEAL FOUR DISC\n\n&quot; &quot;\nab 2.499,00 €\n&quot;
+## 4 &quot;\n\nREVEAL FOUR\n\n&quot;      &quot;\nab 2.099,00 €\n&quot;
+## 5 &quot;\n \nREVEAL SIX DISC\n\n&quot; &quot;\nab 3.499,00 €\n&quot;
+## 6 &quot;\n\nX-LITE FOUR DISC\n\n&quot; &quot;\nab 2.699,00 €\n&quot;
+## 7 &quot;\n\nX-LITE FOUR\n\n&quot;      &quot;\nab 2.199,00 €\n&quot;
+## 8 &quot;\n\nX-LITE SIX DISC\n\n&quot;  &quot;\nab 3.899,00 €\n&quot;
+## 9 &quot;\n\nX-LITE SIX\n\n&quot;       &quot;\nab 3.499,00 €\n&quot;</code></pre>
 </div>
 </div>
 </div>

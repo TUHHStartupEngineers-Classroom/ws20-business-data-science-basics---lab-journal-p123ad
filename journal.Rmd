@@ -566,17 +566,24 @@ cum_cases_tbl <- covid_data_tbl %>%
   
   # get list mit cummulative cases per region
   max_cum_cases_tbl <- cum_cases_tbl %>%
+    mutate(day = day(date)) %>%
     group_by(countriesAndTerritories) %>%
-    summarize(max_cases = max(cum_cases))
+    mutate(max_cases = max(cum_cases)) %>%
+    filter(month == 12 & day == 3) %>%
+    select(countriesAndTerritories, max_cases, date) %>%
+    filter(countriesAndTerritories == "United_States_of_America" | 
+             countriesAndTerritories == "Germany")
+  
 ````    
     
 ## Data visualization part 1
 
-````{r}
+````{r fig.width=10, fig.height=7}
 cases_plot <- cum_cases_tbl %>%
   ggplot() +
   
-  geom_line(aes(x = date, y = cum_cases, color = countriesAndTerritories)) +
+  geom_line(aes(x = date, y = cum_cases, color = countriesAndTerritories),
+            size = 1.5) +
     
   theme_dark() +
     
@@ -584,7 +591,11 @@ cases_plot <- cum_cases_tbl %>%
     axis.text.x = element_text(
       angle = 45,
       hjust = 1
-    )
+    ),
+    plot.title = element_text(face = "bold"),
+    plot.caption = element_text(face = "bold.italic"),
+    legend.title = element_text(face = "bold"),
+    legend.position = "bottom"
   ) +
     
   expand_limits(y = 1.5e7) +
@@ -592,22 +603,25 @@ cases_plot <- cum_cases_tbl %>%
   scale_y_continuous(labels = scales::dollar_format(scale = 1e-6,
                                                     prefix = "",
                                                     suffix = "M")) +
+  scale_x_date(date_labels = "%B", date_breaks = "1 month") +
   
   labs(
       title = "COVID-19 confirmed cases worldwide",
       subtitle = str_glue("Date: {today()}"),
       x = "Year 2020",
-      y = "Cumulative Cases"
-    ) 
+      y = "Cumulative Cases",
+      caption = "Labels for USA and Germany"
+    ) +
     
     
-#  geom_label(aes(x = month(date), y = 500000, label = max_cases),
-#             vjust = -0.5,
-#             #size = 5,
-#             fill = "#1f78b4",
-#             color = "white",
-#             fontface = "italic",
-#             data = max_cum_cases_tbl) 
+  geom_label(aes(x = date, y = max_cases, label = max_cases),
+             vjust = 1.8,
+             hjust = 0.8,
+             data = max_cum_cases_tbl,
+             size = 5,
+             fill = "#ba9538",
+             color = "white")
+              
    
   cases_plot 
   
@@ -667,6 +681,10 @@ library(maps)
              map = world) +
     
     theme_dark() +
+    theme(plot.title = element_text(face = "bold"),
+          plot.caption = element_text(face = "bold.italic"),
+          legend.title = element_text(face = "bold"),
+          legend.position = "right") +
     
     scale_fill_gradient(low = "red", 
                         high = "black",

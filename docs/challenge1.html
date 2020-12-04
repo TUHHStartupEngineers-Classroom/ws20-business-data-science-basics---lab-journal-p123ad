@@ -335,7 +335,7 @@ $(document).ready(function () {
 
 <div id="challenge-1---intro-to-tidyverse" class="section level1">
 <h1>Challenge 1 - Intro to tidyverse</h1>
-<p>Last compiled: 2020-12-02</p>
+<p>Last compiled: 2020-12-04</p>
 <p>First do some Loading and joining Data</p>
 <pre class="r"><code># SALES ANALYSIS ----
 
@@ -347,10 +347,8 @@ library(readxl)
 # 2.0 Importing Files ----
 
 bikes_tbl &lt;- read_excel(path = &quot;./bike_sales/01_raw_data/bikes.xlsx&quot;)
-orderlines_tbl &lt;- read_excel(path = &quot;./bike_sales/01_raw_data/orderlines.xlsx&quot;)</code></pre>
-<pre><code>## New names:
-## * `` -&gt; ...1</code></pre>
-<pre class="r"><code>bikeshops_tbl &lt;- read_excel(path = &quot;./bike_sales/01_raw_data/bikeshops.xlsx&quot;)
+orderlines_tbl &lt;- read_excel(path = &quot;./bike_sales/01_raw_data/orderlines.xlsx&quot;)
+bikeshops_tbl &lt;- read_excel(path = &quot;./bike_sales/01_raw_data/bikeshops.xlsx&quot;)
 
 # 3.0 Examining Data ----
 
@@ -425,7 +423,6 @@ bike_orderlines_wrangled_tbl &lt;- bike_orderlines_joined_tbl %&gt;%
                                      decimal.mark = &quot;,&quot;, 
                                      prefix = &quot;&quot;, 
                                      suffix = &quot; €&quot;))</code></pre>
-<pre><code>## `summarise()` ungrouping output (override with `.groups` argument)</code></pre>
 <ol start="2" style="list-style-type: decimal">
 <li>Visualize Data</li>
 </ol>
@@ -458,8 +455,7 @@ bike_orderlines_wrangled_tbl &lt;- bike_orderlines_joined_tbl %&gt;%
       x = &quot;&quot;, # Override defaults for x and y
       y = &quot;Revenue&quot;
     )</code></pre>
-<pre><code>## `geom_smooth()` using formula &#39;y ~ x&#39;</code></pre>
-<p><img src="challenge1_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<p><img src="challenge1_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
 </div>
 <div id="sales-by-location-and-year" class="section level2">
 <h2>Sales by location and year</h2>
@@ -487,7 +483,6 @@ bike_orderlines_wrangled_tbl &lt;- bike_orderlines_joined_tbl %&gt;%
                                        decimal.mark = &quot;,&quot;, 
                                        prefix = &quot;&quot;, 
                                        suffix = &quot; €&quot;))</code></pre>
-<pre><code>## `summarise()` regrouping output by &#39;year&#39; (override with `.groups` argument)</code></pre>
 <ol start="2" style="list-style-type: decimal">
 <li>Visualize Data</li>
 </ol>
@@ -520,8 +515,7 @@ bike_orderlines_wrangled_tbl &lt;- bike_orderlines_joined_tbl %&gt;%
       x = &quot;&quot;,
       y = &quot;Revenue&quot;
     )</code></pre>
-<pre><code>## `geom_smooth()` using formula &#39;y ~ x&#39;</code></pre>
-<p><img src="challenge1_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<p><img src="challenge1_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
 </div>
 </div>
 
