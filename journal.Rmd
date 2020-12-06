@@ -564,13 +564,15 @@ cum_cases_tbl <- covid_data_tbl %>%
   group_by(countriesAndTerritories) %>%
   mutate(cum_cases = cumsum(cases))
   
-  # get list mit cummulative cases per region
+  # get list with cummulative cases per region
   max_cum_cases_tbl <- cum_cases_tbl %>%
     mutate(day = day(date)) %>%
     group_by(countriesAndTerritories) %>%
     mutate(max_cases = max(cum_cases)) %>%
-    filter(month == 12 & day == 3) %>%
+    filter(month == month(today()) & day == day(today())) %>%
     select(countriesAndTerritories, max_cases, date) %>%
+    
+    #only labels for German and USA
     filter(countriesAndTerritories == "United_States_of_America" | 
              countriesAndTerritories == "Germany")
   
@@ -578,8 +580,8 @@ cum_cases_tbl <- covid_data_tbl %>%
     
 ## Data visualization part 1
 
-````{r fig.width=10, fig.height=7}
-cases_plot <- cum_cases_tbl %>%
+````{r fig.width=12, fig.height=9}
+cum_cases_tbl %>%
   ggplot() +
   
   geom_line(aes(x = date, y = cum_cases, color = countriesAndTerritories),
@@ -612,6 +614,8 @@ cases_plot <- cum_cases_tbl %>%
       y = "Cumulative Cases",
       caption = "Labels for USA and Germany"
     ) +
+  
+
     
     
   geom_label(aes(x = date, y = max_cases, label = max_cases),
@@ -622,10 +626,10 @@ cases_plot <- cum_cases_tbl %>%
              fill = "#ba9538",
              color = "white")
               
-   
-  cases_plot 
+
   
 ````
+I don't know wh my labels are not shown! When I build the website with the code in the journal.Rmd file the plot is visible with the labels like intended. But when I build the website with "Build Website" or with source("build_website.R") there are no labels!!!
 
 ## Data wrangling part 2
 ````{r}
