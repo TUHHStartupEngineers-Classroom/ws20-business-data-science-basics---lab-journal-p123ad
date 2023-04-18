@@ -1,0 +1,202 @@
+---
+title: "challenge3"
+author: "fblome"
+date: "29 11 2020"
+output: html_document
+
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Challenge 3 - Data wrangling
+
+## 1. Libraries
+````{r eval=FALSE}
+# Tidyverse
+library(tidyverse)
+library(vroom)
+
+# Data Table
+library(data.table)
+
+````
+
+## 2. Data Import
+````{r eval = FALSE}
+# 2.1 Assignee  Data ----
+col_types_ass <- list(
+  id = col_character(),
+  type = col_integer(),
+  name_first = col_skip(NULL),
+  name_last = col_skip(NULL),
+  organization = col_character()
+)
+
+assignee_tbl <- vroom(
+  file       = "00_data/patents_data/assignee.tsv", 
+  delim      = "\t", 
+  col_types  = col_types_ass,
+  na         = c("", "NA", "NULL")
+)
+
+
+#2.2 Patents assignee data ----
+
+col_types_pat_ass <- list(
+  patent_id = col_character(),
+  assignee_id = col_character(),
+  location_id = col_skip()
+)
+
+patent_assignee_tbl <- vroom(
+  file        = "00_data/patents_data/patent_assignee.tsv",
+  delim       = "\t",
+  col_types   = col_types_pat_ass,
+  na          = c("", "NA", "NULL")
+)
+
+#2.3 Patents data ----
+
+col_types_pat <- list(
+  id = col_character(),
+  type = col_character(),
+  number = col_skip(),
+  country = col_skip(),
+  date = col_date("%Y-%m-%d"),
+  abstract = col_skip(),
+  title = col_skip(),
+  kind = col_skip(),
+  num_claims = col_skip(),
+  filename = col_skip(),
+  withdrawn = col_skip()
+)
+
+patents_tbl <- vroom(
+  file        = "00_data/patents_data/patent.tsv",
+  delim       = "\t",
+  col_types   = col_types_pat,
+  na          = c("", "NA", "NULL")
+)
+
+
+# 2.4 USPC data ----
+
+col_types_uspc <- list(
+  uuid = col_skip(),
+  patent_id = col_character(),
+  mainclass_id = col_character(),
+  subclass_id = col_skip(),
+  sequence = col_skip()
+)
+
+uspc_tbl <- vroom(
+  file        = "00_data/patents_data/uspc.tsv",
+  delim       = "\t",
+  col_types   = col_types_uspc,
+  na          = c("", "NA", "NULL")
+)
+
+````
+
+## 3. Merge data
+````{r eval = FALSE}
+# Convert to data.table ----
+
+setDT(assignee_tbl)
+setDT(patent_assignee_tbl)
+setDT(patents_tbl)
+setDT(uspc_tbl)
+
+#Merge assignee and patent_assignee by assignee_id
+combined_assignee_data <- merge(x = assignee_tbl, y = patent_assignee_tbl,
+                                by.x    = "id",
+                                by.y    = "assignee_id", 
+                                all.x = FALSE,
+                                all.y = TRUE)
+
+# Merge combined_assignee_data with patents_tbl
+combined_patent_data <- merge(x = combined_assignee_data, y = patents_tbl,
+                              by.x      = "patent_id",
+                              by.y      = "id",
+                              all.x = FALSE,
+                              all.y = TRUE)
+
+# Merge combined_patent_data with uspc_tbl
+combined_uspc_data <- merge(x = combined_patent_data, y = uspc_tbl,
+                            by.x        = "patent_id",
+                            by.y        = "patent_id",
+                            all.x = FALSE,
+                            all.y = TRUE)
+
+
+````
+
+## 4. Analysis of Data
+
+## 4.1 What US company / corporation has the most patents?
+List the 10 US companies with the most assigned/granted patents.
+Calculation
+````{r eval=FALSE}
+most_patents_US <- combined_assignee_data[type == 2, .N, by = organization] # 2- US company or Corporation
+most_patents_US[order(-N)]  %>% # order in descending way and slice only first 10 entries
+    slice(1:10) %>%
+  write_rds("02_data_wrangling/most_patents_US.rds")
+````
+Result
+````{r}
+most_patents_US <- read_rds("patents_data/most_patents_US.rds")
+most_patents_US
+````
+
+## 4.2 What US company had the most patents granted in 2019?
+List the top 10 companies with the most new granted patents for 2019.
+Calculation
+````{r eval=FALSE}
+
+most_patents_US_2019 <- combined_patent_data[type.x == 2 & lubridate::year(date) == "2019", .N, by = organization ]
+most_patents_US_2019[order(-N)] %>%
+  slice(1:10) %>%
+  write_rds("02_data_wrangling/most_patents_US_2019.rds")
+
+````
+Result
+````{r}
+most_patents_US_2019 <- read_rds("patents_data/most_patents_US_2019.rds")
+most_patents_US_2019
+
+````
+
+
+## 4.3 What is the most innovative tech sector?
+For the top 10 companies (worldwide) with the most patents, 
+what are the top 5 USPTO tech main classes?
+
+Calculation
+````{r calculation, eval=FALSE}
+top_tech_main_classes <- combined_uspc_data[type.x == 2 | type.x == 3, .N, by = mainclass_id]
+top_tech_main_classes[order(-N)] %>%
+  slice(1:5) %>%
+  write_rds("02_data_wrangling/top_tech_main_classes.rds")
+````
+Result
+````{r}
+top_tech_main_classes <- read_rds("patents_data/top_tech_main_classes.rds")
+top_tech_main_classes
+
+````
+
+
+
+
+
+
+
+
+
+
+
+
+
+

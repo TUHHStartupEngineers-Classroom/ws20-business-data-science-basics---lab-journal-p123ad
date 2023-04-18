@@ -1,0 +1,90 @@
+---
+title: "challenge2_webScraping"
+author: "fblome"
+date: "27 11 2020"
+output: html_document
+
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Challenge 2 - Web scraping
+
+## 1. get Data via an API
+Get Data from first Pokemon Bulbasaur
+Set eval=FALSE because Dataset is very very large
+````{r eval=FALSE}
+#Acces to a Database using HTTP and API ----
+
+#Import library
+library(tidyverse)
+library(glue)
+library(httr)
+library(jsonlite)
+
+# First http request to Pokemon API
+resp <- GET("https://pokeapi.co/api/v2/pokemon/1")
+resp
+
+
+#Convert raw Unicode into a character vector in JSON format
+resp %>% 
+  .$content %>% 
+  rawToChar() %>% 
+  fromJSON()
+
+
+````
+
+## 2. Scrape Data from website
+
+````{r}
+## Create a small database of at least one category
+## database content: model names and price for at least one category
+library(tidyverse)
+library(glue)
+library(rvest)
+library(xopen)
+library(jsonlite)
+library(stringi)
+
+#Set URL to specific website
+url_racingbike <- "https://www.rosebikes.de/fahrr%C3%A4der/rennrad"
+````
+### Open url
+````{r eval=FALSE}
+# Open the URL in webbrowser
+xopen(url_racingbike)
+````
+
+### Read in the HTML
+````{r}
+# Read in the HTML for the Racingbike URL
+html_racingbike <- read_html(url_racingbike)
+
+# Web scrape the ids for the racingbike
+name <- html_racingbike %>%
+                  html_nodes(css = ".catalog-category-bikes__title") %>%
+                  html_text() %>%
+                  #stringr::str_extract_all("[A-Z]+(?=\\n)") %>%
+                  tibble()
+name
+
+prices <- html_racingbike %>%
+                  html_nodes(css = ".catalog-category-bikes__price-title") %>%
+                  html_text() %>%
+                  tibble()
+prices
+````
+
+### Merge the two tibbles
+````{r}
+# Merge the two tibbles together
+combo <- bind_cols(name,prices)
+
+combo
+
+````
+

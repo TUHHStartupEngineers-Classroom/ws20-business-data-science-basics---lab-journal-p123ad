@@ -7,7 +7,7 @@ navbar:
   left:
     - text: "Home"
       href: index.html
-    - text: "Journal"
+    - text: "Main Journal Page"
       href: journal.html
     - text: "Class notes"
       menu:
